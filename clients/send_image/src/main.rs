@@ -1,8 +1,8 @@
-use std::path::PathBuf;
+use image::imageops::FilterType;
+use libhexapanel::HexaPanel;
 use std::net::SocketAddr;
 use std::net::UdpSocket;
-use libhexapanel::HexaPanel;
-use image::imageops::FilterType;
+use std::path::PathBuf;
 use std::time::Duration;
 use structopt::*;
 
@@ -33,8 +33,8 @@ fn main() -> libhexapanel::Result<()> {
     loop {
         let mut iter = opt.files.iter().peekable();
         while let Some(path) = iter.next() {
-            let img = image::open(path)?
-                .resize_exact(IMAGE_SIZE.0, IMAGE_SIZE.1, FilterType::Gaussian);
+            let img =
+                image::open(path)?.resize_exact(IMAGE_SIZE.0, IMAGE_SIZE.1, FilterType::Gaussian);
 
             //let mut hexapanel = HexaPanel::<std::fs::File>::connect(addr)?;
             hexapanel.send_frame(img)?;

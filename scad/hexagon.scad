@@ -29,9 +29,11 @@ for(i = [0:count-1]) {
     }
 }*/ 
 
-corner_bottom();
+//corner_bottom();
 
-%edge_top();
+corner_top();
+
+edge_top();
 
 module corner_bottom(offset = 0, wall = 9) {
     difference() {

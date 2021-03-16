@@ -1,0 +1,5 @@
+[workspace]
+members = [
+	"clients/libhexapanel",
+	"clients/send_image",
+]

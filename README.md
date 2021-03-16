@@ -15,6 +15,7 @@ Setup
 - 1 spool of black filament. PLA
 - 2x WS2812B strips. Length: 5m. 30 LEDs per meter.
 - Aluminiom foil
+- bare wire (I used paperclips)
 
 ### 3D Printing
 
@@ -49,7 +50,7 @@ make upload
 Prereq:
 
 - Firmware is flashed
-- everything is wired up
+- rust and cargo are installed
 
 ```bash
 cd clients/send_image

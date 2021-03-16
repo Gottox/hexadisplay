@@ -37,6 +37,9 @@ Prereq:
 - Connect the ESP32 to the usb port
 
 ```bash
+vi firmware/src/config.h # adapt for your needs
+printf '#define WIFI_PASSWORD "%s"' "$(head -n1)" > firmware/src/config_secure.h
+# Enter your wifi password
 cd firmware
 make upload
 ```

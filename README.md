@@ -8,7 +8,7 @@ Setup
 
 ### Parts list:
 
-- Clip frame 70x100 (e.g. [this one](https://www.amazon.de/FlexiPeople-Cliprahmen-Bilderrahmen-Plakatrahmen-Rahmenlos/dp/B07ZXPSWK7/)
+- Clip frame 70x100 (e.g. [this one](https://www.amazon.de/FlexiPeople-Cliprahmen-Bilderrahmen-Plakatrahmen-Rahmenlos/dp/B07ZXPSWK7/))
 - ~3 spools of white filament. PLA
 - 1 spool of black filament. PLA
 - 2x WS2812B strips. Length: 5m. 30 LEDs per meter.
@@ -20,6 +20,10 @@ Here be dragons.
 For now look in the scad folder.
 
 ### Wiring diagram
+
+Here be dragons.
+
+### Assembly
 
 Here be dragons.
 

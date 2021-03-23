@@ -9,7 +9,7 @@ Setup
 ### Parts list:
 
 - D1 Mini ESP32
-- A **beefy** power supply. 5V 4A. (Maybe 12V works fine too, but haven't it tested yet)
+- A **beefy** power supply. 5V 4A.
 - Clip frame 70x100 (e.g. [this one](https://www.amazon.de/FlexiPeople-Cliprahmen-Bilderrahmen-Plakatrahmen-Rahmenlos/dp/B07ZXPSWK7/))
 - ~3 spools of white filament. PLA
 - 1 spool of black filament. PLA

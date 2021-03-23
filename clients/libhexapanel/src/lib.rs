@@ -1,5 +1,7 @@
 use image::DynamicImage;
 use image::GenericImageView;
+use raqote::DrawTarget;
+use std::convert::TryInto;
 use std::fs::File;
 use std::io::prelude::*;
 use std::net::ToSocketAddrs;
@@ -13,6 +15,44 @@ enum Command {
     RESET = 1 << 0,
     CLRSCN = 1 << 1,
     SHOW = 1 << 2,
+}
+
+pub trait ImageSource {
+    fn size(&self) -> (u32, u32);
+    fn rgb(&self) -> Vec<u8>;
+}
+
+impl ImageSource for DynamicImage {
+    fn size(&self) -> (u32, u32) {
+        self.dimensions()
+    }
+
+    fn rgb(&self) -> Vec<u8> {
+        let mut pixels = vec![];
+        let dimensions = self.size();
+        for y in 0..dimensions.1 {
+            for x in 0..dimensions.0 {
+                pixels.extend_from_slice(&self.get_pixel(x, y).0[0..3]);
+            }
+        }
+        pixels
+    }
+}
+
+impl ImageSource for &DrawTarget {
+    fn size(&self) -> (u32, u32) {
+        (
+            self.width().try_into().unwrap(),
+            self.height().try_into().unwrap(),
+        )
+    }
+    fn rgb(&self) -> Vec<u8> {
+        let mut pixels = vec![];
+        for pixel in self.get_data() {
+            pixels.extend_from_slice(&pixel.to_be_bytes()[1..4]);
+        }
+        pixels
+    }
 }
 
 pub trait SendPayload {
@@ -57,26 +97,42 @@ impl<T> HexaPanel<T>
 where
     T: SendPayload,
 {
-    pub fn send_frame(&mut self, img: DynamicImage) -> Result<()> {
-        let dimensions = img.dimensions();
+    pub fn aligned_size() -> Option<usize> {
+        let mut size = T::WINDOW_SIZE? - 1;
+        size -= size % 3;
+        Some(size + 1)
+    }
+
+    pub fn send_frame<I>(&mut self, img: I) -> Result<()>
+    where
+        I: ImageSource,
+    {
+        let dimensions = img.size();
+
         if dimensions != (23, 18) {
             Err("Wrong dimensions!")?;
         }
+
         let mut payload = vec![Command::RESET as u8 | Command::CLRSCN as u8];
 
-        for y in 0..dimensions.1 {
-            for x in 0..dimensions.0 {
-                if let Some(window_size) = T::WINDOW_SIZE {
-                    if payload.len() + 3 > window_size {
-                        self.send_payload(&payload)?;
-                        payload = vec![Command::NOOP as u8];
-                    }
-                }
-                payload.extend_from_slice(&img.get_pixel(x, y).0[0..3]);
+        let mut pixels = img.rgb();
+        let window_size = Self::aligned_size().unwrap_or(pixels.len() + payload.len());
+
+        loop {
+            let back = pixels.split_off(pixels.len().min(window_size - payload.len()));
+            payload.extend_from_slice(&pixels);
+            pixels = back;
+
+            if pixels.is_empty() {
+                payload[0] |= Command::SHOW as u8;
+                self.send_payload(&payload)?;
+                break;
+            } else {
+                self.send_payload(&payload)?;
+                payload = vec![Command::NOOP as u8];
             }
         }
-        payload[0] |= Command::SHOW as u8;
-        self.send_payload(&payload)?;
+
         Ok(())
     }
 

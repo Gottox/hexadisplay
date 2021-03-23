@@ -31,9 +31,24 @@ for(i = [0:count-1]) {
 
 //corner_bottom();
 
-corner_top();
+//corner_top();
 
-edge_top();
+//edge_top();
+
+power_hexagon();
+
+module power_hexagon() {
+    difference() {
+        union() {
+            rotate([0,-5,360/12]) piece(40, 5, 0, 3);
+            translate([7.5,0,30])rotate([0,90,0]) cylinder(10, d1=12, d2=21); 
+        }
+        translate([7,0,30]){
+            rotate([0,90,0]) cylinder(20, d=11); 
+            translate([-30,0,0]) cube([13,15,13], center = true);
+        }
+    }
+}
 
 module corner_bottom(offset = 0, wall = 9) {
     difference() {
@@ -113,25 +128,25 @@ module edge_top(edge = false,offset = outer_radius/2, wall = 9) {
     }
 }
 
-module piece(height, steep, rotation) {
+module piece(height, steep, rotation, connectors = 6) {
     rotate([0,0,rotation]) translate([-outer_radius,0,height + 10]) rotate([180,steep,0]) translate([outer_radius,0,0]) difference() {
-        piece_solid(height, steep, rotation,diameter, 0);
-        piece_solid(height-0.9, steep, rotation,diameter-2, 2);
+        piece_solid(height, steep, rotation,diameter, 0, connectors = connectors);
+        piece_solid(height-0.9, steep, rotation,diameter-2, 2, connectors = connectors);
     }
 }
 
-module piece_solid(height, steep, rotation, diameter, offset, out = 0) {
+module piece_solid(height, steep, rotation, diameter, offset, out = 0, connectors = 6) {
     difference() {
         rotate([0,0,rotation]) {
             difference() {
                 cylinder(10+height+diameter, d=diameter,  $fn=6);
-                for(i=[0:5]) rotate([0,0,i*60]) {
+                for(i=[0:connectors-1]) rotate([0,0,i*60]) {
                     cube([15,100,6], center = true);
                     translate([0,inner_radius,0]) mirror([0,1,0]) connector(offset,10);
                 }
             }
             if (out != 0) {
-                for(i=[0:5]) rotate([0,0,i*60]) {
+                for(i=[0:connectors-1]) rotate([0,0,i*60]) {
                     translate([0,inner_radius,0]) mirror([0,1,0]) connector(offset,10);
                 }
             }

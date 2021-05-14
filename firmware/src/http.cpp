@@ -37,7 +37,7 @@ http_blit_panel() {
 		decode_base64((unsigned char *)payload_base64, payload_str.length(),
 					  (unsigned char *)payload);
 
-	panel_process((enum Command)payload[0], &payload[1], payload_len - 1);
+	panel_blit((enum Command)payload[0], &payload[1], payload_len - 1);
 	http.send(200, "text/plain", "Ok");
 	free((void *)payload);
 	free((void *)payload_base64);

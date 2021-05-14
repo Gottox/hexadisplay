@@ -19,11 +19,13 @@ void panel_draw();
 
 void panel_clear();
 
-void panel_process(enum Command cmd, char *buffer, int len);
+void panel_blit(enum Command cmd, char *buffer, int len);
 
 void panel_set_led(int led, int r, int g, int b);
 
 void panel_setup();
+
+void panel_process();
 
 #endif /* end of include guard PANEL_H */
 

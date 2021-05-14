@@ -1,1 +1,1 @@
-firmware/src/config_secure.h filter=git-crypt diff=git-crypt
+firmware/include/config_secure.h filter=git-crypt diff=git-crypt

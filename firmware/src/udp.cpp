@@ -22,7 +22,7 @@ udp_process() {
 	int cmd = udp.read();
 	if (cmd != -1) {
 		int len = udp.read(buffer, sizeof buffer);
-		panel_process((enum Command)cmd, buffer, len);
+		panel_blit((enum Command)cmd, buffer, len);
 	}
 	udp.flush();
 }

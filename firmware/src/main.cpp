@@ -41,4 +41,5 @@ void
 loop() {
 	udp_process();
 	http_process();
+	panel_process();
 }

@@ -2,11 +2,11 @@
 name = "rainbow"
 version = "0.1.0"
 authors = ["Enno Boland <g@s01.de>"]
-edition = "2018"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-raqote = "0.8.0"
+raqote = { version = "0.8.0", default-features = false }
 libhexapanel = { path = "../libhexapanel" }
 structopt = "0.3.21"

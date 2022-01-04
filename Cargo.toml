@@ -3,4 +3,5 @@ members = [
 	"clients/libhexapanel",
 	"clients/send_image",
 	"clients/rainbow",
+	"clients/test_pattern",
 ]

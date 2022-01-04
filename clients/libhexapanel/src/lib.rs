@@ -1,5 +1,8 @@
-use image::DynamicImage;
-use image::GenericImageView;
+use crc::Algorithm;
+use crc::Crc;
+use crc::CRC_8_SMBUS;
+#[cfg(feature = "image")]
+use image::{DynamicImage, GenericImageView};
 use raqote::DrawTarget;
 use std::convert::TryInto;
 use std::fs::File;
@@ -22,6 +25,7 @@ pub trait ImageSource {
     fn rgb(&self) -> Vec<u8>;
 }
 
+#[cfg(feature = "image")]
 impl ImageSource for DynamicImage {
     fn size(&self) -> (u32, u32) {
         self.dimensions()
@@ -71,9 +75,9 @@ impl HexaPanel<UdpSocket> {
 }
 
 impl SendPayload for UdpSocket {
-    const WINDOW_SIZE: Option<usize> = Some(512);
+    const WINDOW_SIZE: Option<usize> = Some(2048);
     fn send_payload(&mut self, payload: &[u8]) -> Result<()> {
-        self.send(payload)?;
+        self.send(&payload)?;
         Ok(())
     }
 }
@@ -100,7 +104,7 @@ where
     pub fn aligned_size() -> Option<usize> {
         let mut size = T::WINDOW_SIZE? - 1;
         size -= size % 3;
-        Some(size + 1)
+        Some(size + 2)
     }
 
     pub fn send_frame<I>(&mut self, img: I) -> Result<()>
@@ -113,7 +117,7 @@ where
             Err("Wrong dimensions!")?;
         }
 
-        let mut payload = vec![Command::RESET as u8 | Command::CLRSCN as u8];
+        let mut payload = vec![0u8, Command::RESET as u8 | Command::CLRSCN as u8];
 
         let mut pixels = img.rgb();
         let window_size = Self::aligned_size().unwrap_or(pixels.len() + payload.len());
@@ -124,10 +128,12 @@ where
             pixels = back;
 
             if pixels.is_empty() {
-                payload[0] |= Command::SHOW as u8;
+                payload[1] |= Command::SHOW as u8;
+                self.add_crc(&mut payload);
                 self.send_payload(&payload)?;
                 break;
             } else {
+                self.add_crc(&mut payload);
                 self.send_payload(&payload)?;
                 payload = vec![Command::NOOP as u8];
             }
@@ -136,8 +142,15 @@ where
         Ok(())
     }
 
+    fn add_crc(&mut self, payload: &mut Vec<u8>) {
+        let crc = Crc::<u8>::new(&CRC_8_SMBUS);
+        let mut digest = crc.digest();
+        digest.update(&payload[1..]);
+        payload[0] = digest.finalize();
+    }
+
     fn send_payload(&mut self, payload: &[u8]) -> Result<()> {
-        &self.0.send_payload(payload)?;
+        self.0.send_payload(payload)?;
         Ok(())
     }
 }

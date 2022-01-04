@@ -25,9 +25,7 @@ const uint16_t leds_per_bank = 45;
 const uint16_t led_count = leds_per_bank * bank_count;
 const uint16_t pixel_count = bank_count * (leds_per_bank + 1); // one dead pixel per bank due to hexagonal
 
-static uint8_t current_buffer_fill = 0;
-static uint8_t current_buffer_show = 0;
-CRGB draw_buffer[PANEL_BUFFER_COUNT][pixel_count];
+CRGB draw_buffer[pixel_count];
 CRGB leds[led_count];
 uint16_t cursor = 0;
 
@@ -36,26 +34,24 @@ panel_draw() {
 	for (int16_t bank = 0, buffer_index = 0; bank < bank_count; bank++) {
 		uint16_t target_offset = bank * leds_per_bank;
 		for (int16_t led = leds_per_bank - row_offset; led < leds_per_bank; led++, buffer_index++) {
-			leds[target_offset + led] = draw_buffer[current_buffer_show][buffer_index];
+			leds[target_offset + led] = draw_buffer[buffer_index];
 		}
 		buffer_index++; // Skip one pixel
 		for (int16_t led = row_offset; led >= 0; led--, buffer_index++) {
-			leds[target_offset + led] = draw_buffer[current_buffer_show][buffer_index];
+			leds[target_offset + led] = draw_buffer[buffer_index];
 		}
 	}
-	current_buffer_show++;
-	current_buffer_fill++;
 	FastLED.show();
 }
 
 void
 panel_clear() {
-	fill_solid(draw_buffer[current_buffer_fill], led_count, CRGB::Black);
+	fill_solid(draw_buffer, led_count, CRGB::Black);
 }
 
 void
 panel_set_led(int led, int r, int g, int b) {
-	draw_buffer[current_buffer_fill][led] = CRGB(r, g, b);
+	draw_buffer[led] = CRGB(r, g, b);
 }
 
 
@@ -65,23 +61,19 @@ panel_blit(enum Command cmd, char *buffer, int len) {
 	if (len % 3 != 0) {
 		return;
 	}
-	Serial.print("Draw: ");
 
 	if (cmd & CMD_RESET) {
-		Serial.print("Reset ");
 		cursor = 0;
 	}
 	if (cmd & CMD_CLRSCN) {
 		panel_clear();
-		Serial.print("ClearScreen ");
 	}
 	for (int i = 0; i < len && cursor < pixel_count; i+=3, cursor++) {
-		draw_buffer[current_buffer_fill][cursor] = CRGB(buffer[i], buffer[i+1], buffer[i+2]);
+		draw_buffer[cursor] = CRGB(buffer[i], buffer[i+1], buffer[i+2]);
 	}
 	if (cmd & CMD_SHOW) {
 		panel_draw();
 	}
-	Serial.println();
 }
 
 void panel_setup() {

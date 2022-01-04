@@ -1,6 +1,6 @@
-count = 18;
+    count = 18;
 
-seed=42+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3;
+seed=42+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3+3;
 random_height=rands(18,40,count,seed);
 random_steep=rands(0,20,count,seed+1);
 random_rotate=rands(0,360/6,count,seed+2);
@@ -13,12 +13,12 @@ diameter = 50;
 outer_radius = diameter / 2;
 inner_radius = sqrt(pow(outer_radius,2) - pow(outer_radius/2,2));
 
-/*!mirror([0,0,1]){
+/*mirror([0,0,1]){
     translate([70,0,0]) edge_side(0);
     edge_side();
     translate([-70,0,0]) rotate([0,0,90]) edge_top(true);
     translate([-70,70,0]) rotate([0,0,90]) edge_top(false);
-}
+}*/
 for(i = [0:count-1]) {
     translate([diameter * 1.3 * i,0,0]) {
         piece(random_height[i], random_steep[i], random_rotate[i]);
@@ -27,7 +27,7 @@ for(i = [0:count-1]) {
         //    translate([0,diameter - i * 8,0]) connector(-.2);
         //}
     }
-}*/ 
+}
 
 //corner_bottom();
 
@@ -35,7 +35,7 @@ for(i = [0:count-1]) {
 
 //edge_top();
 
-power_hexagon();
+//power_hexagon();
 
 module power_hexagon() {
     difference() {

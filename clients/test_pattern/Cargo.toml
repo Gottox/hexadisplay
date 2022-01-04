@@ -1,0 +1,11 @@
+[package]
+name = "test_pattern"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+derive_more = "0.99.17"
+enum-utils = "0.1.2"
+libhexapanel = { path = "../libhexapanel" }
+raqote = "0.8.0"
+structopt = "0.3.21"
